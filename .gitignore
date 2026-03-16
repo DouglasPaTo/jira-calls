@@ -1,0 +1,23 @@
+# Sensitive data
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# DB
+*.db
+
+# OS
+.DS_Store
+Thumbs.db

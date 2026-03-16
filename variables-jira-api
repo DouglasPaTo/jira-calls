@@ -1,0 +1,15 @@
+Variáveis disponíveis para Detalhamento:
+| Variável | Descrição |
+|-----------|-----------|
+| key | ID do ticket (ex: SUP-123) |
+| summary | Título/resumo do ticket |
+| description | Descrição original (Solicitação) |
+| last_comment | Última comentário (Solução) |
+| time_spent | Tempo como string (ex: "2h 30m") |
+| time_minutes | Tempo em minutos (inteiro) |
+| labels | Lista de labels |
+| organizations | Lista de organizações |
+| assignee | Responsável |
+| due_date | Data de vencimento |
+
+

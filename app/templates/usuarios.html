@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Usuários - Jira Reports{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-800">Gerenciar Usuários</h1>
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-blue-600 hover:text-blue-800">Dashboard</a>
+                <span class="text-gray-600">{{ request.session.get('username') }}</span>
+                <a href="/logout" class="text-red-600 hover:text-red-800">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto py-6 px-4">
+        <!-- Criar usuário -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-bold mb-4">Criar Novo Usuário</h2>
+            <form id="criarForm" class="flex gap-4">
+                <input type="text" name="username" placeholder="Nome de usuário" required class="border rounded px-3 py-2 flex-1">
+                <input type="password" name="password" placeholder="Senha" required class="border rounded px-3 py-2 flex-1">
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Criar</button>
+            </form>
+        </div>
+
+        <!-- Lista de usuários -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">Usuários Cadastrados</h2>
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-left">Usuário</th>
+                        <th class="px-4 py-2 text-left">Admin</th>
+                        <th class="px-4 py-2 text-left">Criado em</th>
+                        <th class="px-4 py-2 text-left">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="border-t">
+                        <td class="px-4 py-2">{{ user.username }}</td>
+                        <td class="px-4 py-2">{{ 'Sim' if user.is_admin else 'Não' }}</td>
+                        <td class="px-4 py-2">{{ user.created_at }}</td>
+                        <td class="px-4 py-2">
+                            {% if user.username != 'usrking' %}
+                            <button onclick="excluir({{ user.id }}, '{{ user.username }}')" class="text-red-600 hover:text-red-800">Excluir</button>
+                            {% else %}
+                            <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg hidden z-50"></div>
+
+<script>
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'fixed top-4 right-4 ' + (isError ? 'bg-red-500' : 'bg-green-500') + ' text-white px-6 py-3 rounded shadow-lg z-50';
+    setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+document.getElementById('criarForm').onsubmit = function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('/usuarios/criar', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) showToast(data.error, true);
+            else {
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        });
+};
+
+function excluir(userId, username) {
+    if (!confirm('Tem certeza que deseja excluir ' + username + '?')) return;
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    fetch('/usuarios/excluir', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) showToast(data.error, true);
+            else {
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        });
+}
+</script>
+{% endblock %}

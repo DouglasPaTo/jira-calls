@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Jira Reports{% endblock %}
+
+<style>
+    .footer {
+        text-align: center;
+        color: #777;
+        font-size: 10px;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #eee;
+    }
+
+</style>
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96">
+        <h1 class="text-2xl font-bold text-center mb-6">Jira Reports</h1>
+        
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="post" action="/login">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3" name="username" type="text" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Senha</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3" name="password" type="password" required>
+            </div>
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Entrar</button>
+        </form>
+        <br>
+        <div class="footer">
+            Relatório_DLS-TI_(╯°□°)╯︵ ┻━┻
+        </div>
+    </div>
+</div>
+{% endblock %}

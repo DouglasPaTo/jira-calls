@@ -1,0 +1,105 @@
+from fastapi import APIRouter, Request, Depends, HTTPException, responses
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+from app.db.session import get_db
+from app.db.models import User
+
+router = APIRouter()
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+templates = Jinja2Templates(directory="app/templates")
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def create_default_admin(db):
+    existing = db.query(User).filter(User.username == "usrking").first()
+    if not existing:
+        admin = User(
+            username="usrking",
+            password_hash=get_password_hash("MortySeiya!"),
+            is_admin=1
+        )
+        db.add(admin)
+        db.commit()
+
+@router.get("/login")
+async def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@router.post("/login")
+async def login(request: Request, db: Session = Depends(get_db)):
+    form = await request.form()
+    username = form.get("username")
+    password = form.get("password")
+    
+    user = db.query(User).filter(User.username == username).first()
+    
+    if not user or not verify_password(password, user.password_hash):
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": "Usuário ou senha inválidos"
+        })
+    
+    request.session["user_id"] = user.id
+    request.session["username"] = user.username
+    request.session["is_admin"] = user.is_admin
+    
+    return responses.RedirectResponse(url="/", status_code=302)
+
+@router.get("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return responses.RedirectResponse(url="/login")
+
+@router.get("/usuarios")
+async def usuarios_page(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("user_id"):
+        return responses.RedirectResponse(url="/login")
+    
+    users = db.query(User).all()
+    return templates.TemplateResponse("usuarios.html", {"request": request, "users": users})
+
+@router.post("/usuarios/criar")
+async def criar_usuario(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("user_id"):
+        return {"error": "Não autorizado"}
+    
+    form = await request.form()
+    username = form.get("username")
+    password = form.get("password")
+    
+    existing = db.query(User).filter(User.username == username).first()
+    if existing:
+        return {"error": "Usuário já existe"}
+    
+    new_user = User(
+        username=username,
+        password_hash=get_password_hash(password),
+        is_admin=0
+    )
+    db.add(new_user)
+    db.commit()
+    
+    return {"message": f"Usuário {username} criado com sucesso!"}
+
+@router.post("/usuarios/excluir")
+async def excluir_usuario(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("user_id"):
+        return {"error": "Não autorizado"}
+    
+    form = await request.form()
+    user_id = form.get("user_id")
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        if user.username == "usrking":
+            return {"error": "Não é possível excluir o admin padrão"}
+        db.delete(user)
+        db.commit()
+        return {"message": "Usuário excluído"}
+    
+    return {"error": "Usuário não encontrado"}
