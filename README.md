@@ -77,3 +77,12 @@ new-jreport/
 | `./start.sh` | Inicia o servidor na porta 8000 |
 | `./stop.sh` | Para o servidor |
 | `./restart.sh` | Reinicia o servidor |
+
+## Customização (Opcional)
+
+Se quiser personalizar o sistema com sua logo e favicon:
+
+- **Logo**: Place em `app/static/logo.png` (dimensão recomendada: 200x50px)
+- **Favicon**: Place em `app/static/favicon/favicon.ico` (dimensão recomendada: 32x32px)
+
+O sistema detecta automaticamente se esses arquivos existirem e exibe no relatório.
