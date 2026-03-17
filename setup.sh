@@ -8,6 +8,13 @@ if ! command -v python3 &> /dev/null; then
     sudo apt update && sudo apt install -y python3 python3-pip python3-venv
 fi
 
+# Verificar e remover banco de dados existente
+if [ -f "app/jira_reports.db" ]; then
+    echo "Removendo banco de dados existente..."
+    rm -f app/jira_reports.db
+    echo "Banco de dados antigo removido!"
+fi
+
 # Criar ambiente virtual
 if [ ! -d "venv" ]; then
     echo "Criando ambiente virtual..."

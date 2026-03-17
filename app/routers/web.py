@@ -28,7 +28,8 @@ def dashboard(
     organization: str = None,
     label: str = None,
     assignee: str = None,
-    status: str = None
+    status: str = None,
+    project: str = None
 ):
     try:
         user_id = request.session.get("user_id")
@@ -43,12 +44,22 @@ def dashboard(
     all_labels = set()
     all_assignees = set()
     all_statuses = set()
+    all_projects = set()
     
     for t in all_tickets:
         orgs = json.loads(t.organizations) if t.organizations else []
         lbls = json.loads(t.labels) if t.labels else []
         extra = json.loads(t.extra_fields) if t.extra_fields else {}
         status_obj = extra.get('status', {})
+        proj_obj = extra.get('project', {})
+        
+        if proj_obj:
+            proj_name = proj_obj.get('name', proj_obj.get('key', ''))
+            if proj_name:
+                all_projects.add(proj_name)
+        
+        if status_obj and status_obj.get('name'):
+            all_statuses.add(status_obj['name'])
         if status_obj and status_obj.get('name'):
             all_statuses.add(status_obj['name'])
         
@@ -88,6 +99,9 @@ def dashboard(
     if status and status != "all":
         query = query.filter(Ticket.extra_fields.like(f'%"name": "{status}"%'))
     
+    if project and project != "all":
+        query = query.filter(Ticket.extra_fields.like(f'%"name": "{project}"%'))
+    
     tickets = query.order_by(Ticket.due_date.desc()).all()
     
     tickets_with_lists = []
@@ -118,13 +132,15 @@ def dashboard(
         "labels": sorted(list(all_labels)),
         "assignees": sorted(list(all_assignees)),
         "statuses": sorted(list(all_statuses)),
+        "projects": sorted(list(all_projects)),
         "filters": {
             "start_date": start_date or "",
             "end_date": end_date or "",
             "organization": organization or "all",
             "label": label or "all",
             "assignee": assignee or "all",
-            "status": status or "all"
+            "status": status or "all",
+            "project": project or "all"
         }
     })
 
@@ -188,6 +204,7 @@ async def exportar_html(
     label = form.get("label")
     assignee = form.get("assignee")
     status = form.get("status")
+    project = form.get("project")
     
     query = db.query(Ticket)
     
@@ -204,6 +221,9 @@ async def exportar_html(
             query = query.filter(Ticket.due_date <= end)
         except:
             pass
+    
+    if project and project != "all":
+        query = query.filter(Ticket.extra_fields.like(f'%"name": "{project}"%'))
     
     if organization and organization != "all":
         query = query.filter(Ticket.organizations.like(f'%"{organization}"%'))

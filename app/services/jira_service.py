@@ -10,16 +10,18 @@ def get_jira_auth():
     return HTTPBasicAuth(settings.jira_email, settings.jira_api_token)
 
 
-def build_jql():
+def build_jql(project=None):
     jql_parts = []
     
-    if settings.jira_project:
-        jql_parts.append(f"project = {settings.jira_project}")
+    if project:
+        jql_parts.append(f"project = {project}")
+    else:
+        jql_parts.append("project = SUP")
     
     if settings.jira_status_filter:
         jql_parts.append(f"statusCategory = {settings.jira_status_filter}")
     
-    return " AND ".join(jql_parts) if jql_parts else ""
+    return " AND ".join(jql_parts)
 
 
 def fetch_done_tickets(update_mode=False):
