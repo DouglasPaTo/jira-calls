@@ -103,3 +103,49 @@ async def excluir_usuario(request: Request, db: Session = Depends(get_db)):
         return {"message": "Usuário excluído"}
     
     return {"error": "Usuário não encontrado"}
+
+@router.post("/usuarios/alterar-senha")
+async def alterar_senha(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("user_id"):
+        return {"error": "Não autorizado"}
+    
+    form = await request.form()
+    user_id = form.get("user_id")
+    new_password = form.get("new_password")
+    
+    if not new_password or len(new_password) < 4:
+        return {"error": "Senha deve ter pelo menos 4 caracteres"}
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        user.password_hash = get_password_hash(new_password)
+        db.commit()
+        return {"message": "Senha alterada com sucesso!"}
+    
+    return {"error": "Usuário não encontrado"}
+
+@router.post("/usuarios/criar-admin")
+async def criar_admin(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("user_id"):
+        return {"error": "Não autorizado"}
+    
+    form = await request.form()
+    username = form.get("username")
+    password = form.get("password")
+    
+    if not username or not password or len(password) < 4:
+        return {"error": "Usuário e senha são obrigatórios (senha mínimo 4 caracteres)"}
+    
+    existing = db.query(User).filter(User.username == username).first()
+    if existing:
+        return {"error": "Usuário já existe"}
+    
+    new_user = User(
+        username=username,
+        password_hash=get_password_hash(password),
+        is_admin=1
+    )
+    db.add(new_user)
+    db.commit()
+    
+    return {"message": f"Admin {username} criado com sucesso!"}

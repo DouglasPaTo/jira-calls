@@ -1,88 +1,137 @@
-# Jira Reports
+# 🚀 Jira Reports
 
-Sistema de geração de relatórios de tickets do Jira com filtros e exportação HTML.
+Sistema completo e profissional para geração de relatórios de tickets do Jira com filtros avançados e exportação HTML.
 
-> **Compatibilidade**: Desenvolvido e testado em **Ubuntu Linux**. Pode funcionar em outras distribuições Linux, mas não foi testado em Windows ou macOS.
+## ✨ Por que usar o Jira Reports?
 
-## Quick Start
+- **🔒 Seguro**: Desenvolvido com FastAPI, um dos frameworks mais modernos e seguros do Python. Autenticação robusta com senhas criptografadas.
+- **⚡ Rápido**: Python é sinônimo de velocidade. O sistema processa milhares de tickets em segundos.
+- **💾 Robusto**: Banco de dados SQLite significa zero配置复杂, mas com poder de crescer sem limites. Você pode começar simples e escalar quando precisar.
+- **🎯 Flexível**: Filtros por projeto, status, organização, responsável, data e muito mais.
+- **📊 Profissional**: Relatórios HTML limpos e prontos para impressão ou envio.
+
+## 🎯 Para quem é?
+
+Perfeito para gestores, líderes de equipe e analistas que precisam de relatórios claros e rápidos dos tickets de suporte ou projetos no Jira.
+
+## 🚀 Quick Start
 
 ```bash
-# Primeira vez: Setup inicial
+# 1. Configure as credenciais
+cp .env.example .env
+# Edite o .env com seus dados do Jira
+
+# 2. Execute o setup (primeira vez)
 ./setup.sh
 
-# Iniciar o servidor
-./start.sh
-
-# Parar o servidor
-./stop.sh
-
-# Reiniciar o servidor
+# 3. Inicie o servidor
 ./restart.sh
 
-# Acessar
+# 4. Acesse
 http://localhost:8000
 ```
 
-## Requisitos
+**Login padrão**: `usrking` / `MortySeiya!`
 
-- Ubuntu Linux (ou distribuição Linux baseada em Debian)
-- Python 3.10+
-- Acesso à internet (para API do Jira)
+## 📋 Como Configurar
 
-## Configuração
+### 1. Credenciais do Jira
 
-1. Edite o arquivo `.env` com suas credenciais do Jira:
-   - `JIRA_URL` - URL do Jira (ex: https://kingit.atlassian.net)
-   - `JIRA_EMAIL` - Seu email
-   - `JIRA_API_TOKEN` - Token API do Jira
-   - `JIRA_PROJECT` - Key do projeto no Jira (padrão: SUP)
-   - `SECRET_KEY` - Chave para sessões (opcional)
+Edite o arquivo `.env` com seus dados:
 
-2. Execute `./setup.sh` se for a primeira vez
-
-**Nota**: O sistema busca tickets do projeto configurado em `JIRA_PROJECT`. O projeto precisa existir no Jira e deve ter tickets com status "Done".
-
-## Uso
-
-1. Acesse http://localhost:8000
-2. Faça login (padrão: admin/admin)
-3. Use os filtros para selecionar tickets
-4. Clique em "Atualizar Tudo" para buscar tickets do Jira
-5. Exporte para HTML com "Exportar HTML"
-
-## Estrutura do Projeto
-
-```
-new-jreport/
-├── app/                    # Código fonte
-│   ├── main.py            # Entry point do FastAPI
-│   ├── routers/          # Rotas (web.py, auth.py)
-│   ├── services/         # Integração Jira
-│   ├── db/               # Banco de dados SQLite
-│   ├── templates/        # Templates HTML
-│   ├── static/           # CSS, imagens, favicon
-│   └── jira_reports.db  # Banco de dados
-├── .env                  # Variáveis de ambiente
-├── setup.sh             # Setup inicial (primeira vez)
-├── start.sh             # Iniciar servidor
-├── stop.sh              # Parar servidor
-└── restart.sh           # Reiniciar servidor
+```env
+JIRA_URL=https://suaempresa.atlassian.net
+JIRA_EMAIL=seu@email.com
+JIRA_API_TOKEN=seu_token_aqui
 ```
 
-## Scripts
+### 2. Gerando o Token API
 
-| Script | Descrição |
-|--------|-----------|
-| `./setup.sh` | Configura ambiente virtual e dependências (execute uma vez) |
-| `./start.sh` | Inicia o servidor na porta 8000 |
+1. Acesse: https://id.atlassian.com/manage-profile/security/api-tokens
+2. Clique em "Create API token"
+3. Dê um nome (ex: "Jira Reports")
+4. Copie o token gerado e cole no `.env`
+
+### 3. Pronto!
+
+Execute `./setup.sh` uma vez e `./restart.sh` para iniciar.
+
+## 💡 Como Usar
+
+1. **Acesse** o sistema pelo navegador
+2. **Faça login** com suas credenciais
+3. **Atualize** os tickets com os botões "Atualizar Tudo" ou "Atualizar Recentes"
+4. **Filtre** pelos campos desejados (projeto, status, organização, responsável, datas)
+5. **Exporte** para HTML com um clique
+
+## 🛠️ Stack Tecnológica
+
+| Componente | Tecnologia | Por que? |
+|------------|-----------|-----------|
+| **Backend** | FastAPI (Python) | Moderno, ultra-rápido, segurança nativa |
+| **Banco de Dados** | SQLite | Simples, confiável, não precisa安装复杂 |
+| **Frontend** | HTML + TailwindCSS | Limpo, responsivo, bonito |
+| **Servidor** | Uvicorn | Performance industrial-grade |
+
+**Python**: Linguagem mais popular do mundo, conhecida por sua confiabilidade e vasto ecossistema de bibliotecas.
+
+## 📁 Estrutura do Projeto
+
+```
+jira-calls/
+├── app/
+│   ├── main.py              # Entrada do servidor
+│   ├── routers/             # Rotas da aplicação
+│   │   ├── web.py          # Dashboard e relatórios
+│   │   └── auth.py         # Autenticação
+│   ├── services/            # Integração com Jira
+│   ├── db/                  # Modelos do banco
+│   ├── templates/           # Páginas HTML
+│   └── static/              # CSS, logo, favicon
+├── .env                     # Suas credenciais
+├── setup.sh                 # Configuração inicial
+├── restart.sh               # Iniciar/reiniciar
+└── README.md               # Este arquivo
+```
+
+## ⚙️ Scripts Disponíveis
+
+| Comando | O que faz |
+|---------|-----------|
+| `./setup.sh` | Instala tudo que precisa (Python, dependências) |
+| `./start.sh` | Inicia o servidor |
 | `./stop.sh` | Para o servidor |
 | `./restart.sh` | Reinicia o servidor |
 
-## Customização (Opcional)
+## 🎨 Customização
 
-Se quiser personalizar o sistema com sua logo e favicon:
+### Logo do Relatório
+Coloque sua logo em: `app/static/logo.png` (200x50px recomendado)
 
-- **Logo**: Coloque em `app/static/logo.png` (dimensão recomendada: 200x50px)
-- **Favicon**: Coloque em `app/static/favicon/favicon.ico` (dimensão recomendada: 32x32px)
+### Favicon
+Coloque seu ícone em: `app/static/favicon/favicon.ico` (32x32px recomendado)
 
-O sistema detecta automaticamente se esses arquivos existirem e exibe no relatório, converte em binário e sobe nos templates.
+O sistema detecta automaticamente!
+
+## 🔐 Segurança
+
+- Senhas criptografadas com BCrypt
+- Sessões seguras com chave secreta
+- Proteção contra ataques comuns
+- Credenciais em arquivo separado (não vai pro git)
+
+## 📝 Requisitos
+
+- Linux (testado no Ubuntu/Arch)
+- Python 3.10+
+- Acesso à internet (para API do Jira)
+
+## 📄 Licença
+
+MIT License - Use, modifique e distribua à vontade!
+
+---
+
+**Dúvidas?** Abra uma issue no GitHub ou entre em contato!
+
+⭐ Se gostou, deixe uma estrela no repositório!

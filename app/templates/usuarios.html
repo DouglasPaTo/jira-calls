@@ -17,13 +17,24 @@
 
     <div class="max-w-7xl mx-auto py-6 px-4">
         <!-- Criar usuário -->
-        <div class="bg-white p-6 rounded-lg shadow mb-6">
-            <h2 class="text-xl font-bold mb-4">Criar Novo Usuário</h2>
-            <form id="criarForm" class="flex gap-4">
-                <input type="text" name="username" placeholder="Nome de usuário" required class="border rounded px-3 py-2 flex-1">
-                <input type="password" name="password" placeholder="Senha" required class="border rounded px-3 py-2 flex-1">
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Criar</button>
-            </form>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">Criar Usuário Comum</h2>
+                <form id="criarForm" class="flex flex-col gap-3">
+                    <input type="text" name="username" placeholder="Nome de usuário" required class="border rounded px-3 py-2">
+                    <input type="password" name="password" placeholder="Senha" required class="border rounded px-3 py-2">
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Criar Usuário</button>
+                </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">Criar Admin</h2>
+                <form id="criarAdminForm" class="flex flex-col gap-3">
+                    <input type="text" name="username" placeholder="Nome de usuário admin" required class="border rounded px-3 py-2">
+                    <input type="password" name="password" placeholder="Senha" required class="border rounded px-3 py-2">
+                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Criar Admin</button>
+                </form>
+            </div>
         </div>
 
         <!-- Lista de usuários -->
@@ -45,10 +56,11 @@
                         <td class="px-4 py-2">{{ 'Sim' if user.is_admin else 'Não' }}</td>
                         <td class="px-4 py-2">{{ user.created_at }}</td>
                         <td class="px-4 py-2">
+                            <button onclick="mostrarAlterarSenha({{ user.id }}, '{{ user.username }}')" class="text-blue-600 hover:text-blue-800 mr-3">Alterar Senha</button>
                             {% if user.username != 'usrking' %}
                             <button onclick="excluir({{ user.id }}, '{{ user.username }}')" class="text-red-600 hover:text-red-800">Excluir</button>
                             {% else %}
-                            <span class="text-gray-400">-</span>
+                            <span class="text-gray-400">Padrão</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -56,6 +68,21 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
+<!-- Modal Alterar Senha -->
+<div id="senhaModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-96">
+        <h3 class="text-lg font-bold mb-4">Alterar Senha - <span id="modalUsername"></span></h3>
+        <form id="alterarSenhaForm" class="flex flex-col gap-3">
+            <input type="hidden" name="user_id" id="modalUserId">
+            <input type="password" name="new_password" placeholder="Nova senha" required class="border rounded px-3 py-2">
+            <div class="flex gap-2">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex-1">Salvar</button>
+                <button type="button" onclick="fecharModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex-1">Cancelar</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -83,6 +110,20 @@ document.getElementById('criarForm').onsubmit = function(e) {
         });
 };
 
+document.getElementById('criarAdminForm').onsubmit = function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('/usuarios/criar-admin', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) showToast(data.error, true);
+            else {
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        });
+};
+
 function excluir(userId, username) {
     if (!confirm('Tem certeza que deseja excluir ' + username + '?')) return;
     const formData = new FormData();
@@ -97,5 +138,33 @@ function excluir(userId, username) {
             }
         });
 }
+
+function mostrarAlterarSenha(userId, username) {
+    document.getElementById('modalUserId').value = userId;
+    document.getElementById('modalUsername').textContent = username;
+    document.getElementById('senhaModal').classList.remove('hidden');
+}
+
+function fecharModal() {
+    document.getElementById('senhaModal').classList.add('hidden');
+}
+
+document.getElementById('alterarSenhaForm').onsubmit = function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('/usuarios/alterar-senha', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) showToast(data.error, true);
+            else {
+                showToast(data.message);
+                fecharModal();
+            }
+        });
+};
+
+document.getElementById('senhaModal').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+});
 </script>
 {% endblock %}
