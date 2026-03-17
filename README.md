@@ -1,6 +1,6 @@
 # 🚀 Jira Reports
 
-Sistema completo e profissional para geração de relatórios de tickets do Jira com filtros avançados e exportação HTML.
+Sistema para geração de relatórios de tickets do Jira com filtros e exportação HTML.
 
 ## ✨ Por que usar o Jira Reports?
 
@@ -106,6 +106,23 @@ O sistema detecta automaticamente!
 - Linux (testado no Ubuntu)
 - Python 3.10+
 - Acesso à internet (para API do Jira)
+
+## Dashboard
+
+- Interface fácil de usar
+- Lista completa de tickets
+<img width="1335" height="578" alt="jira1" src="https://github.com/user-attachments/assets/a1ddfefd-a8ef-4c74-af78-afff080bf8ff" /> 
+ 
+## Relatório
+
+- Relatório simples e objetivo
+- Informações fáceis de entender
+- Cálculo de custo em tipos diferentes de atendimento
+- Imprimiu (PDF), enviou
+<img width="1216" height="900" alt="jira2" src="https://github.com/user-attachments/assets/239786d3-6305-4a9b-84a0-15977de5628a" />
+
+## Observação
+- O campo Descrição busca apenas o último comentário gerado no Jira
 
 ## 📄 Licença
 
