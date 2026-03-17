@@ -6,32 +6,13 @@ Sistema completo e profissional para geração de relatórios de tickets do Jira
 
 - **🔒 Seguro**: Desenvolvido com FastAPI, um dos frameworks mais modernos e seguros do Python. Autenticação robusta com senhas criptografadas.
 - **⚡ Rápido**: Python é sinônimo de velocidade. O sistema processa milhares de tickets em segundos.
-- **💾 Robusto**: Banco de dados SQLite significa zero配置复杂, mas com poder de crescer sem limites. Você pode começar simples e escalar quando precisar.
+- **💾 Robusto**: Banco de dados SQLite significa zero complexidade, mas com poder de crescer, você pode começar simples e escalar quando precisar.
 - **🎯 Flexível**: Filtros por projeto, status, organização, responsável, data e muito mais.
 - **📊 Profissional**: Relatórios HTML limpos e prontos para impressão ou envio.
 
 ## 🎯 Para quem é?
 
 Perfeito para gestores, líderes de equipe e analistas que precisam de relatórios claros e rápidos dos tickets de suporte ou projetos no Jira.
-
-## 🚀 Quick Start
-
-```bash
-# 1. Configure as credenciais
-cp .env.example .env
-# Edite o .env com seus dados do Jira
-
-# 2. Execute o setup (primeira vez)
-./setup.sh
-
-# 3. Inicie o servidor
-./restart.sh
-
-# 4. Acesse
-http://localhost:8000
-```
-
-**Login padrão**: `usrking` / `MortySeiya!`
 
 ## 📋 Como Configurar
 
@@ -69,8 +50,8 @@ Execute `./setup.sh` uma vez e `./restart.sh` para iniciar.
 | Componente | Tecnologia | Por que? |
 |------------|-----------|-----------|
 | **Backend** | FastAPI (Python) | Moderno, ultra-rápido, segurança nativa |
-| **Banco de Dados** | SQLite | Simples, confiável, não precisa安装复杂 |
-| **Frontend** | HTML + TailwindCSS | Limpo, responsivo, bonito |
+| **Banco de Dados** | SQLite | Simples, confiável, não precisa de complexidade |
+| **Frontend** | HTML + TailwindCSS | Limpo e responsivo |
 | **Servidor** | Uvicorn | Performance industrial-grade |
 
 **Python**: Linguagem mais popular do mundo, conhecida por sua confiabilidade e vasto ecossistema de bibliotecas.
@@ -118,20 +99,14 @@ O sistema detecta automaticamente!
 - Senhas criptografadas com BCrypt
 - Sessões seguras com chave secreta
 - Proteção contra ataques comuns
-- Credenciais em arquivo separado (não vai pro git)
+- Credenciais em arquivo separado
 
 ## 📝 Requisitos
 
-- Linux (testado no Ubuntu/Arch)
+- Linux (testado no Ubuntu)
 - Python 3.10+
 - Acesso à internet (para API do Jira)
 
 ## 📄 Licença
 
 MIT License - Use, modifique e distribua à vontade!
-
----
-
-**Dúvidas?** Abra uma issue no GitHub ou entre em contato!
-
-⭐ Se gostou, deixe uma estrela no repositório!
