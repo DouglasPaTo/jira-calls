@@ -27,7 +27,8 @@ def dashboard(
     end_date: str = None,
     organization: str = None,
     label: str = None,
-    assignee: str = None
+    assignee: str = None,
+    status: str = None
 ):
     try:
         user_id = request.session.get("user_id")
@@ -41,10 +42,16 @@ def dashboard(
     all_orgs = set()
     all_labels = set()
     all_assignees = set()
+    all_statuses = set()
     
     for t in all_tickets:
         orgs = json.loads(t.organizations) if t.organizations else []
         lbls = json.loads(t.labels) if t.labels else []
+        extra = json.loads(t.extra_fields) if t.extra_fields else {}
+        status_obj = extra.get('status', {})
+        if status_obj and status_obj.get('name'):
+            all_statuses.add(status_obj['name'])
+        
         for org in orgs:
             all_orgs.add(org)
         for lbl in lbls:
@@ -78,10 +85,16 @@ def dashboard(
     if assignee and assignee != "all":
         query = query.filter(Ticket.assignee == assignee)
     
+    if status and status != "all":
+        query = query.filter(Ticket.extra_fields.like(f'%"name": "{status}"%'))
+    
     tickets = query.order_by(Ticket.due_date.desc()).all()
     
     tickets_with_lists = []
     for t in tickets:
+        due_date_str = t.due_date.strftime('%Y-%m-%d') if t.due_date else None
+        extra = json.loads(t.extra_fields) if t.extra_fields else {}
+        status_name = extra.get('status', {}).get('name', '') if extra.get('status') else ''
         tickets_with_lists.append({
             'id': t.id,
             'jira_id': t.jira_id,
@@ -93,7 +106,9 @@ def dashboard(
             'labels': json.loads(t.labels) if t.labels else [],
             'organizations': json.loads(t.organizations) if t.organizations else [],
             'assignee': t.assignee,
-            'due_date': t.due_date,
+            'due_date': due_date_str,
+            'status': status_name,
+            'extra_fields': extra,
         })
     
     return templates.TemplateResponse("dashboard.html", {
@@ -102,12 +117,14 @@ def dashboard(
         "organizations": sorted(list(all_orgs)),
         "labels": sorted(list(all_labels)),
         "assignees": sorted(list(all_assignees)),
+        "statuses": sorted(list(all_statuses)),
         "filters": {
             "start_date": start_date or "",
             "end_date": end_date or "",
             "organization": organization or "all",
             "label": label or "all",
-            "assignee": assignee or "all"
+            "assignee": assignee or "all",
+            "status": status or "all"
         }
     })
 
@@ -140,6 +157,7 @@ def atualizar_tickets(
                 existing.organizations = data['organizations']
                 existing.assignee = data['assignee']
                 existing.due_date = data['due_date']
+                existing.extra_fields = data['extra_fields']
             else:
                 ticket = Ticket(**data)
                 db.add(ticket)
@@ -169,6 +187,7 @@ async def exportar_html(
     organization = form.get("organization")
     label = form.get("label")
     assignee = form.get("assignee")
+    status = form.get("status")
     
     query = db.query(Ticket)
     

@@ -16,6 +16,7 @@ class Ticket(Base):
     organizations = Column(String)
     assignee = Column(String, index=True)
     due_date = Column(Date, index=True)
+    extra_fields = Column(Text)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -27,3 +28,4 @@ class User(Base):
     password_hash = Column(String)
     is_admin = Column(Integer, default=0)
     created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

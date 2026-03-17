@@ -22,4 +22,4 @@ PID=$!
 
 echo "Servidor iniciado com PID: $PID"
 echo "Acesse: http://localhost:8000"
-echo "Logs: logs/server.log"
+#echo "Logs: logs/server.log"

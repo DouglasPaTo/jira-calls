@@ -1,5 +1,7 @@
 # Sensitive data
 .env
+.env2
+variables-jira-api
 
 # Python
 __pycache__/
@@ -21,3 +23,6 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+
+# Submodules
+jira-reports/

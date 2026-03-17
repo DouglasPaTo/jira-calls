@@ -10,6 +10,18 @@ def get_jira_auth():
     return HTTPBasicAuth(settings.jira_email, settings.jira_api_token)
 
 
+def build_jql():
+    jql_parts = []
+    
+    if settings.jira_project:
+        jql_parts.append(f"project = {settings.jira_project}")
+    
+    if settings.jira_status_filter:
+        jql_parts.append(f"statusCategory = {settings.jira_status_filter}")
+    
+    return " AND ".join(jql_parts) if jql_parts else ""
+
+
 def fetch_done_tickets(update_mode=False):
     session = requests.Session()
     session.auth = get_jira_auth()
@@ -19,15 +31,17 @@ def fetch_done_tickets(update_mode=False):
     
     max_tickets = 100 if update_mode else None
     
+    base_jql = build_jql()
+    
     if max_tickets:
         params = {
-            "jql": f"project = {settings.jira_project} AND statusCategory = done",
+            "jql": base_jql,
             "maxResults": max_tickets,
             "fields": "key"
         }
     else:
         params = {
-            "jql": f"project = {settings.jira_project} AND statusCategory = done",
+            "jql": base_jql,
             "maxResults": 5000,
             "fields": "key"
         }
@@ -36,7 +50,7 @@ def fetch_done_tickets(update_mode=False):
     issues = r.json().get("issues", [])
     keys = [i.get("key") for i in issues]
     
-    fields_to_fetch = "summary,description,labels,status,assignee,created,updated,duedate,timespent,customfield_10002,comment"
+    fields_to_fetch = "*all"
     
     all_issues = []
     for i in range(0, len(keys), BATCH_SIZE):
@@ -84,7 +98,9 @@ def extract_ticket_data(issue):
     labels = fields.get('labels', [])
     
     orgs = fields.get('customfield_10002', [])
-    organizations = [org.get('name', '') for org in orgs]
+    organizations = []
+    if orgs:
+        organizations = [org.get('name', '') for org in orgs]
     
     assignee = fields.get('assignee', {})
     assignee_name = assignee.get('displayName', '') if assignee else ''
@@ -108,4 +124,5 @@ def extract_ticket_data(issue):
         'organizations': json.dumps(organizations),
         'assignee': assignee_name,
         'due_date': due_date,
+        'extra_fields': json.dumps(fields),
     }
