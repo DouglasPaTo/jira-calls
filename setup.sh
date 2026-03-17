@@ -15,6 +15,11 @@ if [ -f "app/jira_reports.db" ]; then
     echo "Banco de dados antigo removido!"
 fi
 
+# Criar pastas necessárias
+echo "Criando pastas..."
+mkdir -p logs
+mkdir -p app/static/favicon
+
 # Criar ambiente virtual
 if [ ! -d "venv" ]; then
     echo "Criando ambiente virtual..."
