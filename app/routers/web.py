@@ -263,6 +263,9 @@ async def exportar_html(
     if assignee and assignee != "all":
         query = query.filter(Ticket.assignee == assignee)
     
+    if status and status != "all":
+        query = query.filter(Ticket.extra_fields.like(f'%"name": "{status}"%'))
+    
     tickets = query.order_by(Ticket.due_date.asc()).all()
     
     tickets_with_lists = []
